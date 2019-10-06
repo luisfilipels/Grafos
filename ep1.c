@@ -62,18 +62,7 @@ Grafo *criarGrafo(char path[]) {
         fclose(fp);
         return novoGrafo;
     }
-    return NULL;
-
-    /*scanf("%d %d", &n, &m);
-
-    Grafo *novoGrafo = inicializar(n, m);
-
-    for (int i = 0; i < m; i++) {
-        int u, v, c;
-        scanf("%d %d %d", &u, &v, &c);
-        adicionarAresta(novoGrafo, u-1, v-1, c);
-    }
-    return novoGrafo;*/
+    exit(-1);
 
 }
 
