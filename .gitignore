@@ -1,0 +1,12 @@
+**\.idea
+.idea/
+Lib/
+Scripts/
+*/*.png
+local_history.patch
+*/.idea
+*/cmake-build-debug
+/cmake-build-debug
+CMakeLists.txt
+/out
+*.iml
