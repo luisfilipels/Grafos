@@ -35,9 +35,36 @@ void adicionarAresta (Grafo *g, int u, int v, int c) {
     g->mAtual++;
 }
 
-Grafo *criarGrafo() {
+Grafo *criarGrafo(char path[]) {
+
     int n, m;
-    scanf("%d %d", &n, &m);
+
+    char buff[255];
+    FILE *fp = fopen(path, "r");
+    if (fp) {
+        fscanf(fp, "%s", buff);
+        n = atoi(buff);
+        fscanf(fp, "%s", buff);
+        m = atoi(buff);
+
+        Grafo *novoGrafo = inicializar(n, m);
+
+        for (int i = 0; i < m; i++) {
+            int u, v, c;
+            fscanf(fp, "%s", buff);
+            u = atoi(buff);
+            fscanf(fp, "%s", buff);
+            v = atoi(buff);
+            fscanf(fp, "%s", buff);
+            c = atoi(buff);
+            adicionarAresta(novoGrafo, u-1, v-1, c);
+        }
+        fclose(fp);
+        return novoGrafo;
+    }
+    return NULL;
+
+    /*scanf("%d %d", &n, &m);
 
     Grafo *novoGrafo = inicializar(n, m);
 
@@ -46,7 +73,7 @@ Grafo *criarGrafo() {
         scanf("%d %d %d", &u, &v, &c);
         adicionarAresta(novoGrafo, u-1, v-1, c);
     }
-    return novoGrafo;
+    return novoGrafo;*/
 
 }
 
@@ -120,7 +147,9 @@ void Kruskal (Grafo *grafo) {
 }
 
 int main() {
-    Grafo *grafo = criarGrafo();
+    char path[4096];
+    scanf("%s", path);
+    Grafo *grafo = criarGrafo(path);
     Kruskal(grafo);
     return 0;
 }
