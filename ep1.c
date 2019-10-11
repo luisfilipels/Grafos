@@ -1,5 +1,5 @@
 /**
- * Arquivo: main.c
+ * Arquivo: ep1.c
  * Alunos: Luis Filipe de Lima Sales, Raimundo Azevedo, Iago Moura, Dener Jamil
  *
  * Descrição: Este algoritmo faz parte do programa solicitado como parte da nota de trabalho da N1 na disciplina de
