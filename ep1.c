@@ -26,8 +26,8 @@
  * A struct Aresta é utilizada para armazenar os dados de uma aresta, sendo utilizado na struct Grafo.
  */
 typedef struct Aresta {
-    int u; // Origem da aresta
-    int v; // Destino da aresta
+    int u; // Uma extremidade da aresta
+    int v; // Outra extremidade da aresta
     int c; // Custo da aresta
 } Aresta;
 
@@ -110,6 +110,8 @@ Grafo *criarGrafo(char path[]) {
             fscanf(fp, "%s", buff);
             c = atoi(buff);
             adicionarAresta(grafo, u-1, v-1, c);    // Com os valores lidos acima, é adicionada uma aresta no grafo.
+                                                    // Usamos u-1 e v-1 , pois supomos que os números dos vértices
+                                                    // começariam a partir do 1, conforme o exemplo do exercício.
         }
         fclose(fp);
         return grafo;
@@ -151,49 +153,66 @@ int find(int unionFind[], int vertice) {
     return raiz;
 }
 
+/**
+ * Operação union utilizada no union-find para unir as "categorias" de um vértice.
+ * @param unionFind Array que representa a estrutura de dados.
+ * @param grupo1 Grupo que se deseja unir
+ * @param grupo2 Grupo que se deseja unir
+ */
 void unir (int unionFind[], int grupo1, int grupo2) {
-    int raiz1 = find(unionFind, grupo1);
-    int raiz2 = find(unionFind, grupo2);
+    int raiz1 = find(unionFind, grupo1);       // Encontramos a raiz do primeiro grupo.
+    int raiz2 = find(unionFind, grupo2);       // O mesmo para o segundo.
 
-    if (raiz1 == raiz2) {
+    if (raiz1 == raiz2) {                      // Se as raízes forem as mesmas, não há nada a ser feito.
         return;
     }
-    unionFind[raiz1] = raiz2;
+    unionFind[raiz1] = raiz2;                   // Se não, a raiz de um grupo torna-se a mesma que a do outro grupo.
 }
 
+/**
+ * Implementação do algoritmo de Kruskal. Primeiramente ordena as arestas do grafo admitido conforme seu peso, inicializa
+ * o union-find, e executa o algoritmo de Kruskal em si. Por fim, imprime as arestas obtidas para a AGM e o peso da mesma.
+ * @param grafo Ponteiro para o grafo
+ */
 void Kruskal (Grafo *grafo) {
 
-    int indiceArestasOrdenadas = 0;
-    int indiceArestasAGM = 0;
+    int indiceArestasOrdenadas = 0;      // Variável utilizada para percorrer o vetor de arestas, após terem sido ordenadas.
+    int indiceArestasAGM = 0;            // Variável utilizada para manter o controle das arestas inseridas na AGM.
 
-    Aresta agm[grafo->n];
+    Aresta agm[grafo->n];                // Criamos o vetor de arestas que estão contidas na AGM.
 
-    qsort(grafo->arestas, (size_t) grafo->mAtual, sizeof(grafo->arestas[0]), comparaArestas);   // Ordenando as arestas pelo custo
-    int unionFind [grafo->n]; // Union-find, em que cada posição i indica que o vértice i está num certo grupo unionFind[i]
+    qsort(grafo->arestas, (size_t) grafo->mAtual, sizeof(grafo->arestas[0]), comparaArestas);   // Ordenando as arestas pelo custo.
+
+    int unionFind [grafo->n]; // Union-find, em que cada posição i indica que o vértice i está num certo grupo unionFind[i].
+
     for (int i = 0; i < grafo->n; i++) {
-        unionFind[i] = i;   // O parente de cada vértice é inicalizado como ele mesmo
+        unionFind[i] = i;   // O grupo de cada vértice é inicalizado como ele mesmo.
     }
 
-    while (indiceArestasAGM < grafo->m - 1 && indiceArestasOrdenadas < grafo->m) {
-        Aresta arestaAtual = grafo->arestas[indiceArestasOrdenadas++];
+    while (indiceArestasAGM < grafo->n - 1 && indiceArestasOrdenadas < grafo->m) {
+        // Enquanto menos de (n-1) arestas tenham sido inseridas (vindo da propriedade que relaciona o número de vértices
+        // e o número de arestas de uma árvore), e enquanto não tivermos percorrido todas as arestas do grafo.
 
-        int grupoOrigem = find(unionFind, arestaAtual.u);
-        int grupoDestino = find(unionFind, arestaAtual.v);
+        Aresta arestaAtual = grafo->arestas[indiceArestasOrdenadas++];  // "Pegamos" a próxima aresta, previamente
+                                                                        // ordernada.
 
-        if (grupoDestino != grupoOrigem) {
-            agm[indiceArestasAGM++] = arestaAtual;
-            unir(unionFind, grupoOrigem, grupoDestino);
+        int grupoV1 = find(unionFind, arestaAtual.u);   // Obtemos o grupo de uma extremidade da aresta...
+        int grupoV2 = find(unionFind, arestaAtual.v);   // e o grupo da outra extremidade.
+
+        if (grupoV2 != grupoV1) {                  // Se forem diferentes, não há ciclo ao inserirmos essa aresta na AGM.
+            agm[indiceArestasAGM++] = arestaAtual; // Adicionamos essa aresta na AGM...
+            unir(unionFind, grupoV1, grupoV2);     // e unimos os dois grupos.
         }
     }
 
     printf("Árvore geradora de custo mínimo: ");
     for (int i = 0; i < indiceArestasAGM; i++) {
-        printf("(%d, %d) ", agm[i].u + 1, agm[i].v + 1);
+        printf("(%d, %d) ", agm[i].u + 1, agm[i].v + 1);    // Pois assumimos que a indexação dos vértices começa pelo 1.
     }
     printf("\n");
     int custo = 0;
     for (int i = 0; i < indiceArestasAGM; i++) {
-        custo += agm[i].c;
+        custo += agm[i].c;                      // Acumulamos o custo de todas as arestas na AGM.
     }
     printf("Custo: %d", custo);
 
