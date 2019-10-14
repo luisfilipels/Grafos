@@ -220,7 +220,7 @@ void Kruskal (Grafo *grafo) {
     }
 
     if (min < 0) {                                 // Se houver aresta de custo negativo
-        for (int i = 0; i < grafo->m; i++) {
+        for (int i = 0; i < indiceArestasAGM; i++) {
             agm[i].c -= ((-1) * min) + 1;         // Para inverter o que foi feito antes, somamos o valor mínimo a todas as arestas da AGM.
         }
     }
