@@ -21,6 +21,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <limits.h>
 
 /**
  * A struct Aresta é utilizada para armazenar os dados de uma aresta, sendo utilizado na struct Grafo.
@@ -183,6 +184,19 @@ void Kruskal (Grafo *grafo) {
 
     qsort(grafo->arestas, (size_t) grafo->mAtual, sizeof(grafo->arestas[0]), comparaArestas);   // Ordenando as arestas pelo custo.
 
+    int min = INT_MAX;
+    for (int i = 0; i < grafo->m; i++) { // Verificamos se existe alguma aresta com custo negativo no grafo.
+        if (grafo->arestas[i].c < min) {
+            min = grafo->arestas[i].c;   // Se houver, armazenamos esse valor.
+        }
+    }
+
+    if (min < 0) {                              // Se houver aresta com custo negativo...
+        for (int i = 0; i < grafo->m; i++) {
+            grafo->arestas[i].c += ((-1) * min) + 1;     // Incrementamos esse valor em todas as arestas
+        }
+    }
+
     int unionFind [grafo->n]; // Union-find, em que cada posição i indica que o vértice i está num certo grupo unionFind[i].
 
     for (int i = 0; i < grafo->n; i++) {
@@ -202,6 +216,12 @@ void Kruskal (Grafo *grafo) {
         if (grupoV2 != grupoV1) {                  // Se forem diferentes, não há ciclo ao inserirmos essa aresta na AGM.
             agm[indiceArestasAGM++] = arestaAtual; // Adicionamos essa aresta na AGM...
             unir(unionFind, grupoV1, grupoV2);     // e unimos os dois grupos.
+        }
+    }
+
+    if (min < 0) {                                 // Se houver aresta de custo negativo
+        for (int i = 0; i < grafo->m; i++) {
+            agm[i].c -= ((-1) * min) + 1;         // Para inverter o que foi feito antes, somamos o valor mínimo a todas as arestas da AGM.
         }
     }
 
